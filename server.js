@@ -27,3 +27,15 @@ mongoose.connect(process.env.MONGO_URI)
 .catch(err => {
   console.log("MongoDB Error ❌", err);
 });
+
+// ✅ ROUTE ADDED BACK
+app.post('/submit', async (req, res) => {
+  try {
+    const user = new User(req.body);
+    await user.save();
+    res.send("Data saved successfully ✅");
+  } catch (err) {
+    console.error(err);
+    res.send("Error saving data ❌");
+  }
+});
