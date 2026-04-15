@@ -6,13 +6,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
-
 const User = mongoose.model('User', {
   name: String,
   email: String,
@@ -22,10 +15,19 @@ const User = mongoose.model('User', {
   message: String
 });
 
-app.post('/submit', async (req, res) => {
-  const user = new User(req.body);
-  await user.save();
-  res.send("Data saved successfully!");
-});
+// ✅ FIX: Start server ONLY after DB connects
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  console.log("MongoDB Connected ✅");
 
-app.listen(80, () => console.log("Server running on port 80"));
+  app.listen(80, () => {
+    console.log("Server running on port 80 🚀");
+  });
+
+})
+.catch(err => {
+  console.log("MongoDB Error ❌", err);
+});
